@@ -60,16 +60,19 @@ $(function() {
             '   <div class="col-md-12">\n' +
             '       <div class="post_wrapper">\n' +
             '           <div class="post_header">\n' +
-            '                <span class="author_name">' + data.author_name +'</span>\n' +
+            '                <span class="author_name">' + data.author_name + '</span>\n' +
             '                <span class="post_date">' + data.post_date + '</span>\n' +
             '           </div>\n' +
-            '           <div class="post_body">' + data.message +'</div>\n' +
+            '           <div class="post_body">' + data.message + '</div>\n' +
             '           <div class="post_footer">\n' +
-            '               <form action="/post/score/" method="post" data-score-form-id="' + data.post_id + '">\n' +
-            '               <button data-increase-core="1"><span class="oi oi-arrow-circle-top"></span></button>\n' +
-            '               <span data-score="1"> 0 </span>\n' +
-            '               <button data-decrease-score="1"><span class="oi oi-arrow-circle-bottom"></span></button>\n' +
-            '               </form>\n' +
+            '               <div class="score_panel">\n' +
+            '                   <form action="/post/score/" method="post" data-score-form-id="' + data.post_id + '">\n' +
+            '                       <button data-increase-core="1"><span class="oi oi-arrow-circle-top"></span></button>\n' +
+            '                           <span data-score="1"> 0 </span>\n' +
+            '                       <button data-decrease-score="1"><span class="oi oi-arrow-circle-bottom"></span></button>\n' +
+            '                   </form>\n' +
+            '               </div>\n' +
+            '               <a href="/post/view/' + data.post_id + '" class="post_view">Посмотреть новость</a>\n' +
             '           </div>\n' +
             '       </div>\n' +
             '   </div>\n' +
