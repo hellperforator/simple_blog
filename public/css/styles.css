@@ -1,0 +1,70 @@
+#error {
+    color: red;
+    margin: 10px 0;
+    height: 25px;
+}
+
+.post_wrapper {
+    margin-top: 20px;
+    padding: 20px 10px;
+}
+
+.post_header {
+    height: 20px;
+}
+
+.author_name {
+    float: left;
+    font-weight: bold;"
+}
+
+.post_date {
+    float: right;
+}
+
+.post_body {
+    clear: both;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.post_footer {
+    margin-top: 20px;
+}
+
+.score_panel {
+    float: left;
+    font-size: 25px;
+}
+
+.post_view {
+    display: inline-block;
+    float: right;
+}
+
+.score_panel button {
+    border: none;
+    background-color: transparent;
+}
+
+.comments_wrapper {
+    margin-top: 30px;
+}
+
+.comment_wrapper {
+    margin-top: 20px;
+}
+
+.comments_ta {
+    width: 90%;
+}
+
+.comment_date {
+    margin-bottom: 15px;
+    color: #6c757d;
+}
+
+.comment_author {
+    margin-top: 15px;
+    color: #6c757d;
+}
