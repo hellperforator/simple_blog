@@ -41,6 +41,7 @@ class Post extends Controller
     /**
      * Подготавливает данные по постам для рендера
      * @param $input_data
+     * @param $user_id
      * @return array
      */
    private function prepareDataToOutput($input_data, $user_id = null) {
@@ -71,7 +72,6 @@ class Post extends Controller
        if (is_null($user_id)) {
            return 0;
        }
-
        $score_model = Score::where([
            ['post_id','=' ,$post_id],
            ['user_id', '=', $user_id]
@@ -224,6 +224,11 @@ class Post extends Controller
                ]);
     }
 
+    /**
+     * Комментирует новость
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function comment(Request $request) {
         $text = $request->post('text');
         $post_id = $request->post('post_id');
@@ -246,6 +251,11 @@ class Post extends Controller
         };
     }
 
+    /**
+     * Получает комментарии по id поста
+     * @param $post_id
+     * @return array
+     */
     private function getCommentsData($post_id) {
         $comments = DB::table('comments')
             ->join('users', 'comments.user_id', '=', 'users.id')
