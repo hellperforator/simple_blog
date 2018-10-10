@@ -11,7 +11,7 @@ class Post extends Controller
 {
 
     public function __construct() {
-        $this->middleware('auth')->except('index');
+        $this->middleware('auth')->except('index', 'top', 'view');
         if (Auth::check()) {
             $score = $this->getUserScore() ?? 0;
             session(['score' => $score]);
