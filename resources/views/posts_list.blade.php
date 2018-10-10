@@ -14,9 +14,9 @@
                     <div class="post_footer">
                         <div class="score_panel">
                             <form action="/post/score" method="post" data-score-form-id="{{ $post['id'] }}">
-                                <button data-sign="plus"@if ($post['active_button'] == 'minus') disabled @endif><span class="oi oi-arrow-circle-top"></span></button>
-                                <span data-score="1" active-button="{{ $post['active_button'] }}"> {{ $post['score'] }} </span>
-                                <button data-sign="minus"@if ($post['active_button'] == 'plus') disabled @endif> <span class="oi oi-arrow-circle-bottom"></span></button>
+                                <button data-sign="plus"@if ($post['active_button_flag'] === -1 && $is_authorized) disabled @endif><span class="oi oi-arrow-circle-top"></span></button>
+                                <span data-score="1"> {{ $post['score'] }}</span>
+                                <button data-sign="minus"@if ($post['active_button_flag'] === 1 && $is_authorized) disabled @endif> <span class="oi oi-arrow-circle-bottom"></span></button>
                             </form>
                         </div>
                         <a href="/post/view/{{ $post['id'] }}" class="post_view">Посмотреть новость</a>

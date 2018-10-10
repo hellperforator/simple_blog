@@ -16,7 +16,7 @@ class Post extends Controller
         session(['score' => $score]);
     }
 
-    public function index() {
+    public function index(Request $request) {
         $posts = DB::table('posts')
             ->join('users', 'posts.user_id', '=', 'users.id')
             ->select([
@@ -26,7 +26,16 @@ class Post extends Controller
                 'posts.message',
                 'posts.created_at'
             ])->get();
-        return view('posts_list', ['posts' => $this->prepareDataToOutput($posts)]);
+        $user_id = null;
+        if (Auth::check()) {
+            $user_id = $request->user()->id;
+        }
+        return view(
+            'posts_list',
+            [
+                'posts' => $this->prepareDataToOutput($posts, $user_id),
+                'is_authorized' => Auth::check()
+            ]);
    }
 
     /**
@@ -34,30 +43,48 @@ class Post extends Controller
      * @param $input_data
      * @return array
      */
-   private function prepareDataToOutput($input_data) {
+   private function prepareDataToOutput($input_data, $user_id = null) {
        $data = [];
        foreach ($input_data as $post) {
-           $score_model = Score::where([
-               ['post_id','=' ,$post->id],
-               ['user_id', '=', $post->user_id]
-           ]);
-           $active_button = '';
-           if ($score_model->count()) {
-               $is_score_plus = $score_model->where( ['sign' => 1])->count();
-               $active_button = $is_score_plus ? 'plus' : 'minus';
-           }
            $data[] = [
                'id' => $post->id,
                'name' => $post->name,
                'created_at' => "$post->created_at",
                'message' => $post->message,
                'score' => $this->getPostScore($post->id),
-               'is_btn_disabled' => !Auth::check(),
-               'active_button' => $active_button,
+               'active_button_flag' => $this->getActiveButtonFlag($post->id, $user_id)
            ];
        }
        return $data;
    }
+
+    /**
+     * Получить флаг активности кнопок плюс и минус
+     * 0  - обе кнопки активны
+     * -1 - активен минус
+     * 1  - активен плюс
+     * @param $post_id
+     * @param null $user_id
+     * @return int|null
+     */
+   private function getActiveButtonFlag($post_id, $user_id = null) {
+       if (is_null($user_id)) {
+           return 0;
+       }
+
+       $score_model = Score::where([
+           ['post_id','=' ,$post_id],
+           ['user_id', '=', $user_id]
+       ]);
+
+       $active_button_flag = null;
+
+       if ($score_model->count()) {
+           $active_button_flag = $score_model->first()->sign === 'plus' ? -1 : 1;
+       }
+       return $active_button_flag;
+   }
+
 
     /**
      * Сохраняет новую запись и возвращает данные по новому посту в JSON
@@ -101,17 +128,19 @@ class Post extends Controller
             $score_model->user_id = $user_id;
             $score_model->sign = $sign;
             $score_model->save();
+            return response()->json(['change' => true]);
         } else {
             $score_model = Score::where([
                 ['post_id', '=', $post_id],
                 ['user_id', '=', $user_id],
             ])->first();
-            if (!$score_model->sign == $sign) {
-                $score_model->sign = '';
+            if ($score_model->sign !== $sign) {
+                $score_model->sign = $sign;
                 $score_model->save();
+                return response()->json(['change' => true]);
             }
+            return response()->json(['change' => false]);
         }
-        return response()->json();
     }
 
     /**

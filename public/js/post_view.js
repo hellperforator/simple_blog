@@ -1,6 +1,8 @@
 $(function () {
-    $add_comment_form = $('#add_comment_form');
-    $comments_wrapper = $('.comments_wrapper');
+   var $add_comment_form = $('#add_comment_form');
+   var $comments_wrapper = $('.comments_wrapper');
+   var $posts_wrapper    = $('.posts_wrapper');
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -28,6 +30,45 @@ $(function () {
             $('#error').text(error);
         })
     });
+
+    $posts_wrapper.on('click', '[data-score-form-id] button', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $th = $(this);
+        var $form = $th.closest('form');
+        var sign = $th.data('sign');
+        var data = {
+            sign: sign,
+            post_id: $form.data('score-form-id'),
+        }
+
+        $.post({
+            url: '/post/score/',
+            data: data,
+            success: function (resp) {
+                var $score = $form.find('[data-score]');
+                var old_score =  Number($score.text())
+                var new_score = old_score;
+
+                if (!resp.change) {
+                    return;
+                }
+                if (new_score == 1 || new_score == -1) {
+                    new_score = 0;
+                }
+                if (sign === 'plus') {
+                    new_score++;
+                } else {
+                    new_score--;
+                }
+                $('[data-sign][disabled]').removeAttr('disabled');
+                $th.attr('disabled', true);
+                $score.text(new_score);
+            },
+        });
+    });
+
 
     function createNewComment(data) {
         var new_post =
