@@ -12,8 +12,10 @@ class Post extends Controller
 
     public function __construct() {
         $this->middleware('auth')->except('index');
-        $score = $this->getUserScore() ?? 0;
-        session(['score' => $score]);
+        if (Auth::check()) {
+            $score = $this->getUserScore() ?? 0;
+            session(['score' => $score]);
+        }
     }
 
     public function index(Request $request) {
