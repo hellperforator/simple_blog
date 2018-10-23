@@ -1,7 +1,7 @@
 $(function() {
-    $post_create_form = $('#post_create_form');
-    $posts_wrapper = $('.posts_wrapper');
-    $message_input =  $('[name="message"]');
+    var $post_create_form = $('#post_create_form');
+    var $posts_wrapper = $('.posts_wrapper');
+    var $message_input =  $('[name="message"]');
 
     $.ajaxSetup({
         headers: {
