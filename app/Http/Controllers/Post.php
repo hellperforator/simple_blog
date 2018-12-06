@@ -19,15 +19,7 @@ class Post extends Controller
     }
 
     public function index(Request $request) {
-        $posts = DB::table('posts')
-            ->join('users', 'posts.user_id', '=', 'users.id')
-            ->select([
-                'posts.id',
-                'posts.user_id',
-                'users.name',
-                'posts.message',
-                'posts.created_at'
-            ])->get();
+        $post_model = new \App\Post();
         $user_id = null;
         if (Auth::check()) {
             $user_id = $request->user()->id;
@@ -35,7 +27,7 @@ class Post extends Controller
         return view(
             'posts_list',
             [
-                'posts' => $this->prepareDataToOutput($posts, $user_id),
+                'posts' => $post_model->getPostsData($user_id),
                 'is_authorized' => Auth::check()
             ]);
    }
@@ -207,23 +199,29 @@ class Post extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function view($id) {
-        $post = DB::table('posts')
-            ->join('users', 'posts.user_id', '=', 'users.id')
-            ->select([
-                'posts.id',
-                'posts.user_id',
-                'users.name',
-                'posts.message',
-                'posts.created_at'
-            ])->where(['posts.id' => (int)$id])
-            ->get();
-            $post_data = $this->prepareDataToOutput($post);
-            return view(
-               'post_view',
-               [
-                   'post' => reset($post_data),
-                   'comments' => $this->getCommentsData($id)
-               ]);
+        $post_model = new \App\Post();
+        $this->getUserScore();
+        $user_id = Auth::user()->id;
+        $post_data = $post_model->getPostsData($user_id, $id);
+        $comments_data = \App\Post::find($id)->comments;
+        $comments = [];
+        foreach ($comments_data as $comment) {
+
+            $comments[] = [
+                'author_name' => $comment->user->name,
+                'text' => $comment->text,
+                'comment_date' => $comment->created_at->__toString(),
+                'comment_id' => $comment->id,
+            ];
+        }
+
+        return view(
+           'post_view',
+           [
+               'post' => reset($post_data),
+               'comments' => $comments,
+               'is_authorized' => Auth::check()
+           ]);
     }
 
     /**
@@ -253,31 +251,4 @@ class Post extends Controller
         };
     }
 
-    /**
-     * Получает комментарии по id поста
-     * @param $post_id
-     * @return array
-     */
-    private function getCommentsData($post_id) {
-        $comments = DB::table('comments')
-            ->join('users', 'comments.user_id', '=', 'users.id')
-            ->select([
-                'comments.id',
-                'comments.user_id',
-                'comments.created_at',
-                'comments.text',
-                'users.name'
-            ])->where(['comments.post_id' => (int) $post_id])
-            ->get();
-        $comments_data = [];
-        foreach ($comments as $comment) {
-            $comments_data[] = [
-                'author_name' => $comment->name,
-                'text' => $comment->text,
-                'comment_date' => $comment->created_at,
-                'comment_id' => $comment->id,
-            ];
-        }
-        return $comments_data;
-    }
 }
