@@ -201,7 +201,10 @@ class Post extends Controller
     public function view($id) {
         $post_model = new \App\Post();
         $this->getUserScore();
-        $user_id = Auth::user()->id;
+        $user_id = null;
+        if (Auth::check()) {
+            $user_id = Auth::user()->id;
+        }
         $post_data = $post_model->getPostsData($user_id, $id);
         $comments_data = \App\Post::find($id)->comments;
         $comments = [];

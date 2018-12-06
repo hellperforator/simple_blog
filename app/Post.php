@@ -31,7 +31,7 @@ class Post extends Model {
             $active_button_flag = 0;
 
             if (!is_null($user_id)) {
-                $post_user_score = $post->score->where('user_id', $user_id)->first();
+                $post_user_score = $post->scores()->where('user_id', $user_id)->first();
 
                 if ($post_user_score) {
                     $active_button_flag = $this->getActiveButtonFlag($post_user_score, $user_id);
